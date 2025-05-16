@@ -188,7 +188,22 @@ function send_email(event) {
 
       //If the email was send successfully, load the mailbox
       if (result.message === "Email sent successfully."){
+
+        const flashContainer = document.getElementById('flash-message-container');
+        flashContainer.innerHTML = `
+        <div class="alert alert-success" role="alert">
+        ${result.message}
+        </div>`;
+
+
+
         load_mailbox('sent');
+
+
+
+
+
+
       } else {
         //Handle any errors (Like if recipient were invalid)
         alert(result.error);
