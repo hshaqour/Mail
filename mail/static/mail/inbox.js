@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', compose_email);
 
 
+
   // Add submit event listener for the compose form
   document.querySelector('#compose-form').addEventListener('submit', send_email);
 
@@ -189,28 +190,40 @@ function send_email(event) {
       //If the email was send successfully, load the mailbox
       if (result.message === "Email sent successfully."){
 
-        const flashContainer = document.getElementById('flash-message-container');
-        flashContainer.innerHTML = `
-        <div class="alert alert-success" role="alert">
-        ${result.message}
-        </div>`;
-
-
-
         load_mailbox('sent');
 
-
-
-
-
+        //Short delay then show flash message
+        setTimeout(() => {
+          showFlashMessage(result.message, "success");
+        }, 100);
 
       } else {
         //Handle any errors (Like if recipient were invalid)
-        alert(result.error);
+        alert(result.error, "danger");
       }
     });
 
 }
+
+
+function showFlashMessage(message, type = "success") {
+  // 1. Find the flash message container
+  const flashContainer = document.getElementById('flash-message-container');
+  
+  // 2. Set its content to the message, styled by type (success, danger, etc.)
+  flashContainer.innerHTML = `
+    <div class="alert alert-${type}" role="alert">
+      ${message}
+    </div>
+  `;
+
+  // 3. Auto-dismiss: clear the message after 3 seconds
+  setTimeout(() => {
+    flashContainer.innerHTML = "";
+  }, 3000);
+}
+
+
 
 /* Plans on handling the archive button before
  (Wouldnt have worked because it would always appear on the top of the pay.
