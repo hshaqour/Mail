@@ -77,16 +77,61 @@ function load_mailbox(mailbox) {
           const displayEmail = document.createElement('div');
         
           displayEmail.innerHTML = `
-            <strong>From:</strong> ${email.sender}<br>
-            <strong>To:</strong> ${email.recipients.join(', ')}<br>
-            <strong>Subject:</strong> ${email.subject}<br>
-            <strong>Body:</strong> ${email.body}<br>
-            <strong>Timestamp:</strong> ${email.timestamp}<br>
-            `
+          <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+              <div><strong>From:</strong> ${email.sender}</div>
+              <div><strong>To:</strong> ${email.recipients.join(', ')}</div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title mb-2"><strong>Subject:</strong> ${email.subject}</h5>
+              <hr>
+              <p class="card-text" style="white-space: pre-line;">${email.body}</p>
+              <p class="card-text">
+                <small class="text-muted">${email.timestamp}</small>
+              </p>
+              <div id="email-action-buttons" class="mt-3"></div>
+            </div>
+          </div>
+        `;
+        
+          const actionDiv = displayEmail.querySelector("#email-action-buttons");
+
+
+          //Creating reply button
+          const replyButton = document.createElement('button');
+
+          replyButton.classList.add("btn", "btn-primary", "mb-2");
+
+          replyButton.innerHTML="Reply"
+          replyButton.addEventListener('click', function() {
+            // Show compose view and hide other views
+            document.querySelector('#emails-view').style.display = 'none';
+            document.querySelector('#compose-view').style.display = 'block';
+            fetch(`/emails/${email.id}`)
+              .then(response => response.json())
+              .then(email => {
+                console.log(email);
+
+                let sender = email.sender;
+                let subject = email.subject;
+                let body = email.body;
+                let time = email.timestamp
+
+                //Pre fill email slots
+                document.querySelector('#compose-recipients').value = `${sender}`;
+                document.querySelector('#compose-subject').value = `Re: ${subject}`;
+                document.querySelector('#compose-body').value = `On ${time} ${sender} wrote: ${body}`;
+              })
+          })
+
+          actionDiv.appendChild(replyButton);
+
 
           //Dealing with the creation of archive button
           if (mailbox !== 'sent') {
             const archiveButton = document.createElement('button');
+          
+          archiveButton.classList.add("btn", "btn-outline-secondary", "me-2", "mb-2");  
 
             if (email.archived === true) {
               archiveButton.innerHTML="Unarchive"
@@ -118,43 +163,11 @@ function load_mailbox(mailbox) {
               console.error('Error:', error);
             });
 
-
-
-
           });
-          displayEmail.append(archiveButton);
+            if (mailbox !== 'sent') {
+              actionDiv.appendChild(archiveButton);
+            }
           }
-
-          const replyButton = document.createElement('button');
-          replyButton.innerHTML="Reply"
-          replyButton.addEventListener('click', function() {
-            // Show compose view and hide other views
-            document.querySelector('#emails-view').style.display = 'none';
-            document.querySelector('#compose-view').style.display = 'block';
-            fetch(`/emails/${email.id}`)
-              .then(response => response.json())
-              .then(email => {
-                console.log(email);
-
-                let sender = email.sender;
-                let subject = email.subject;
-                let body = email.body;
-                let time = email.timestamp
-
-                //Pre fill email slots
-                document.querySelector('#compose-recipients').value = `${sender}`;
-                document.querySelector('#compose-subject').value = `Re: ${subject}`;
-                document.querySelector('#compose-body').value = `On ${time} ${sender} wrote: ${body}`;
-              })
-
-              
-            
-
-            
-          })
-
-          displayEmail.append(replyButton);
-
 
       
           document.querySelector('#emails-view').innerHTML ='';
