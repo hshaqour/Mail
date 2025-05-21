@@ -106,10 +106,21 @@ function load_mailbox(mailbox) {
             })
             .then(() => {
               load_mailbox('inbox');
+              setTimeout(() => {
+                showFlashMessage(
+                  newArchivedStatus ? "Email archived!" : "Email unarchived!",
+                  "success"
+                );
+              }, 100);
             })
             .catch(error => {
+              showFlashMessage("Failed to archive email.", "danger");
               console.error('Error:', error);
             });
+
+
+
+
           });
           displayEmail.append(archiveButton);
           }
