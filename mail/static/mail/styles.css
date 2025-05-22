@@ -1,3 +1,11 @@
 textarea {
     min-height: 400px;
 }
+
+
+.list-group-item-action:hover, .list-group-item-action:focus {
+    background-color: #f2f7fb !important; /* a lighter blueish shade, change as you like */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.2s;
+}

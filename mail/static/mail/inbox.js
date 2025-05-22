@@ -52,11 +52,22 @@ function load_mailbox(mailbox) {
     emails.forEach(function(email){
       //Create div for each email
       const newEmail = document.createElement('div');
-      newEmail.innerHTML = ` 
-        <strong>From:</strong> ${email.sender}<br>
-        <strong>Subject:</strong> ${email.subject}<br>
-        <strong>Timestamp:</strong> ${email.timestamp}
-        `
+
+      newEmail.classList.add('list-group-item', 'list-group-item-action', 'mb-2', 'shadow-sm');
+      if (email.read) {
+        newEmail.classList.add('bg-light');
+      } else {
+        newEmail.classList.add('bg-white', 'fw-bold');
+      }
+
+
+      newEmail.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center">
+      <span><strong>From:</strong> ${email.sender}</span>
+      <span class="text-muted small">${email.timestamp}</span>
+    </div>
+    <div><strong>Subject:</strong> ${email.subject}</div>
+  `;
     
 
       newEmail.addEventListener('click', function() {
@@ -73,7 +84,7 @@ function load_mailbox(mailbox) {
               console.log('Email marked as read');
             })
           }
-        
+
           const displayEmail = document.createElement('div');
         
           displayEmail.innerHTML = `
@@ -174,15 +185,11 @@ function load_mailbox(mailbox) {
           document.querySelector('#emails-view').append(displayEmail);
 
       });
-
-      // Set background color based on whether the email is read
-      email.read === true ? newEmail.style.backgroundColor = 'lightgray' : newEmail.style.backgroundColor = 'white';
-      newEmail.style.border = '1px solid black';
-      newEmail.style.padding = '10px';
-      newEmail.style.margin = '5px 0';
-
+      
       emailsList.append(newEmail);
+
     })
+
 
 })
 }
