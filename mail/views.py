@@ -168,6 +168,31 @@ def register(request):
         try:
             user = User.objects.create_user(email, email, password)
             user.save()
+
+            # Create a new email for the user
+            admin_user, created = User.objects.get_or_create(
+                email="admin@gmail.com",
+                defaults={"username": "__mail_admin__"}
+            )
+            if not created and admin_user.username != "__mail_admin__":
+                admin_user.username = "__mail_admin__"
+                admin_user.save()
+
+            welcome_email = Email(
+                user=user,
+                sender=admin_user,
+                subject="Welcome to Mail!",
+                body=(
+                    f"Hi {user.username or user.email},\n\n"
+                    "Thanks for signing up for Mail!\n\n"
+                    "- Click Reply to respond to this message.\n"
+                    "- Try archiving or composing a new email to see Mail in action.\n\n"
+                    "Enjoy exploring!\n— The Mail Team"
+                )
+            )
+            welcome_email.save()
+            welcome_email.recipients.add(user)
+
         except IntegrityError as e:
             print(e)
             return render(request, "mail/register.html", {
@@ -177,3 +202,4 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "mail/register.html")
+        
